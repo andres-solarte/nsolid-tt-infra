@@ -5,6 +5,10 @@ on:
   push:
     branches:
       - main
+    paths:
+      - terraform/infrastructure/**
+      - .github/workflows/ci-cd-tf-infra-pr.yml
+      - .github/workflows/ci-cd-tf-infra-push.yml
 
 jobs:
   deploy:
