@@ -1,4 +1,4 @@
-name: Validate Terraform Infrastructure
+name: Terraform - Validate
 
 on:
   workflow_dispatch:

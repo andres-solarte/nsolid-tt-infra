@@ -1,4 +1,4 @@
-name: Validate App Code
+name: Application - Validate
 
 on:
   workflow_dispatch:
