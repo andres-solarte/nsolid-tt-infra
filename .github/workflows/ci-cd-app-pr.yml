@@ -1,0 +1,45 @@
+name: Validate Terraform Infrastructure
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials (Assume Role Directly)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::192076723315:role/cicd-role
+          role-session-name: GHA-Deployment-Session
+          aws-region: us-east-2
+
+      - uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: app/Dockerfile
+
+      - name: ESLint
+        working-directory: app
+        run: npx eslint .
+
+      - name: Install dependencies
+        working-directory: app
+        run: npm install --omit=dev
+
+      - name: Run tests
+        working-directory: app
+        run: npm test
+
+      - name: Validate image build
+        working-directory: app
+        run: docker build -t app .
