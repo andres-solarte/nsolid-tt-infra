@@ -1,10 +1,14 @@
-name: Validate Terraform Infrastructure
+name: Push App Image to Amazon ECR
 
 on:
   workflow_dispatch:
   pull_request:
     branches:
       - main
+    paths:
+      - app/**
+      - .github/workflows/ci-cd-app-pr.yml
+      - .github/workflows/ci-cd-app-push.yml
 
 jobs:
   validate:
