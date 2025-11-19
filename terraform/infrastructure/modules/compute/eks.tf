@@ -2,8 +2,10 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 21.0"
 
-  name               = "${var.organization_name}-${var.project_name}-${var.environment_name}-eks"
-  kubernetes_version = "1.34"
+  name                         = "${var.organization_name}-${var.project_name}-${var.environment_name}-eks"
+  kubernetes_version           = "1.34"
+  endpoint_public_access       = true
+  endpoint_public_access_cidrs = ["0.0.0.0/0"]
 
   addons = {
     coredns = {}
