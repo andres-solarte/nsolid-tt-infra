@@ -1,0 +1,42 @@
+name: Deploy Terraform Infrastructure
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials (Assume Role Directly)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::192076723315:role/cicd-role
+          role-session-name: GHA-Deployment-Session
+          aws-region: us-east-2
+
+      - name: Configure Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.8.0
+
+      - name: Initialize Terraform
+        working-directory: terraform/infrastructure/environments/main
+        id: init
+        run: terraform init
+
+      - name: Terraform apply
+        working-directory: terraform/infrastructure/environments/main
+        id: apply
+        run: terraform apply -no-color -input=false --auto-approve
+
+

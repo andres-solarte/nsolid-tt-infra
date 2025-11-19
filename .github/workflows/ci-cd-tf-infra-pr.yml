@@ -1,0 +1,50 @@
+name: Validate Terraform Infrastructure
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials (Assume Role Directly)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::192076723315:role/cicd-role
+          role-session-name: GHA-Deployment-Session
+          aws-region: us-east-2
+
+      - name: Configure Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.8.0
+
+      - name: Initialize Terraform
+        working-directory: terraform/infrastructure/environments/main
+        id: init
+        run: terraform init
+
+      - name: Terraform validate
+        working-directory: terraform/infrastructure/environments/main
+        id: validate
+        run: terraform validate
+
+      - name: Terraform format
+        working-directory: terraform/infrastructure/environments/main
+        id: format
+        run: terraform format -check=true -diff=true
+
+      - name: Terraform plan
+        working-directory: terraform/infrastructure/environments/main
+        id: plan
+        run: terraform plan -no-color -out=tfplan -input=false
