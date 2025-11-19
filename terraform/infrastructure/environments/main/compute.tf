@@ -27,4 +27,7 @@ module "compute" {
       "nodesource:node-group" = "main"
     })
   }
+
+  github_actions_role_arn     = module.bootstrap.cicd_role_arn
+  aws_administrators_role_arn = data.aws_iam_role.administrator_access.arn
 }

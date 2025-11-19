@@ -18,6 +18,38 @@ module "eks" {
     }
   }
 
+  authentication_mode = "API_AND_CONFIG_MAP"
+  access_entries = {
+    "github_actions" = {
+      principal_arn = var.github_actions_role_arn
+      username      = "github-actions"
+      groups        = ["system:masters"]
+      policy_associations = {
+        admin = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
+            namespaces = []
+            type       = "cluster"
+          }
+        }
+      }
+    }
+    "aws_administrators" = {
+      principal_arn = var.aws_administrators_role_arn
+      username      = "aws-administrators"
+      groups        = ["system:masters"]
+      policy_associations = {
+        admin = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
+            namespaces = []
+            type       = "cluster"
+          }
+        }
+      }
+    }
+  }
+
   vpc_id                   = var.vpc_id
   subnet_ids               = var.private_subnet_ids
   control_plane_subnet_ids = var.private_subnet_ids
@@ -36,6 +68,11 @@ module "eks" {
       tags           = var.managed_node_group.tags
     }
   }
+
+  kms_key_administrators = [
+    var.github_actions_role_arn,
+    var.aws_administrators_role_arn,
+  ]
 }
 
 

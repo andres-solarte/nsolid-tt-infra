@@ -48,3 +48,13 @@ variable "managed_node_group" {
     tags           = map(string)
   })
 }
+
+variable "github_actions_role_arn" {
+  description = "The ARN of the GitHub Actions role"
+  type        = string
+}
+
+variable "aws_administrators_role_arn" {
+  description = "The ARN of the AWS Administrators role"
+  type        = string
+}
